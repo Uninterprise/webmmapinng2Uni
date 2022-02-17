@@ -1,1 +1,110 @@
 //uno
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src=" https://unpkg.com/leaflet@1.6.0/dist/leaflet.js "></script>
+    <link rel="stylesheet" href=" https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <script type="text/javascript" src="paises.js"></script>
+    <script type="text/javascript" src="ciudades.js"></script>
+
+    <style>
+        #map {
+            width: 100%;
+            height: 580px;
+            box-shadow: 5px 5px 5px #888;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='map'>
+
+    </div>
+    <script>
+
+
+        var OSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a>'
+                + 'contributors',
+            maxZoom: 18
+        }); // eliminado el .addTo(map) porque se añade desde la clase map
+
+
+        var map = L.map('map', {
+            center: [4, -70],
+            layers: [OSM],
+            zoom: 4.9,
+            scrollWheelZoom: true,
+        });
+        L.control.scale()
+            .addTo(map);
+
+
+        function getColor(d) {
+            return d == 'South America' ? '#FBFF00' :
+                d == 'North America' ? '#001FFF' :
+                    d == 'Oceania' ? '#9B00FF' :
+                        d == 'Asia' ? '#FF0000' :
+                            d == 'Europe' ? '#FF8F00' :
+                                d == 'Africa' ? '#00FF04' :
+                                    '#000000';
+        };
+
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.continent),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
+
+        function popup(feature, layer) {
+            if (feature.properties && feature.properties.name_long) {
+                layer.bindPopup(feature.properties.name_long);
+            }
+        }
+        geojson = L.geoJson(paises, {
+            style: style,
+            onEachFeature: popup
+        }).addTo(map);
+
+
+        //ciudades
+
+        function getColorCiudades(d) {
+            return d == 'N' ? '#2AFF00' :
+                '#F7FF00';
+        };
+
+        function styleCiudad(feature, latlng) {
+            return L.circleMarker(latlng, {
+                radius: 8,
+                fillColor: getColorCiudades(feature.properties.capital),
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.8
+            });
+        }
+
+        function popup2(feature, layer) {
+            if (feature.properties && feature.properties.ciudad) {
+                layer.bindPopup(feature.properties.ciudad);
+            }
+        }
+
+        L.geoJson(ciudades, {
+            pointToLayer: styleCiudad,
+            onEachFeature: popup2
+        }).addTo(map);
+
+
+    </script>
+</body>
+
+</html>
