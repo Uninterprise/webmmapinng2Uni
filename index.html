@@ -80,10 +80,14 @@
             return d == 'N' ? '#2AFF00' :
                 '#F7FF00';
         };
+        function getFiguraCiudades(d) {
+            return d == 'N' ? 0 :
+                8;
+        };
 
         function styleCiudad(feature, latlng) {
             return L.circleMarker(latlng, {
-                radius: 8,
+                radius: 10,
                 fillColor: getColorCiudades(feature.properties.capital),
                 color: "#000",
                 weight: 1,
@@ -92,16 +96,36 @@
             });
         }
 
+        //OTROOOOOO2
+     
+        function getIconCiudades(d) {
+            return d == 'N' ? 'cuadroverde.png' :
+                'circuloamarillo.png';
+        };
+
+        function createCustomIcon(feature, latlng) {
+            let myIcon = L.icon({
+                iconUrl: getIconCiudades(feature.properties.capital),
+                iconSize: [25, 25],
+                shadowSize: [35, 20],
+                iconAnchor: [12, 12], 
+                shadowAnchor: [12, 6], 
+                popupAnchor: [0, 0] 
+            })
+            return L.marker(latlng, { icon: myIcon })
+        }
+
+        let myLayerOptions = {
+            pointToLayer: createCustomIcon,
+            onEachFeature: popup2
+        }
         function popup2(feature, layer) {
             if (feature.properties && feature.properties.ciudad) {
                 layer.bindPopup(feature.properties.ciudad);
             }
         }
 
-        L.geoJson(ciudades, {
-            pointToLayer: styleCiudad,
-            onEachFeature: popup2
-        }).addTo(map);
+        L.geoJSON(ciudades, myLayerOptions).addTo(map)
 
 
     </script>
